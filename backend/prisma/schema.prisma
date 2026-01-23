@@ -1,0 +1,270 @@
+// Cybersecurity Learning Platform Schema
+// This schema defines the data structure for a TryHackMe-like learning platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============= ENUMS =============
+// User roles in the platform
+enum UserRole {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+// Difficulty levels for lessons and quizzes
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+// Question types
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_ANSWER
+}
+
+// ============= USER & AUTHENTICATION =============
+// Main User model - stores all users (students, instructors, admins)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  password  String   // Will be hashed with bcrypt
+  firstName String?
+  lastName  String?
+  role      UserRole @default(STUDENT)
+
+  // Relations
+  profile       UserProfile?
+  enrollments   Enrollment[]
+  progress      Progress[]
+  submissions   QuizSubmission[]
+  createdPaths  LearningPath[] @relation("CreatedBy")
+  createdModules Module[]       @relation("CreatedBy")
+  createdLessons Lesson[]       @relation("CreatedBy")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Extended user profile with additional information
+model UserProfile {
+  id            String  @id @default(cuid())
+  userId        String  @unique
+  bio           String?
+  avatar        String? // URL to avatar image
+  points        Int     @default(0) // Gamification
+  currentStreak Int     @default(0)
+  totalLessonsCompleted Int @default(0)
+  totalQuizzesPassed    Int @default(0)
+  badges        String? // JSON array of badge IDs
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============= LEARNING PATHS & MODULES =============
+// Learning Path - top level container (e.g., "Ethical Hacking 101", "Web Security")
+model LearningPath {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  difficulty  DifficultyLevel
+  icon        String?  // URL to icon/image
+  creatorId   String
+  isPublished Boolean  @default(false)
+
+  // Estimated time in hours
+  estimatedHours Int?
+
+  // Relations
+  creator      User         @relation("CreatedBy", fields: [creatorId], references: [id])
+  modules      Module[]
+  enrollments  Enrollment[]
+  quizzes      Quiz[]       // Path-level quizzes
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Module - groups lessons within a path (e.g., "Chapter 1: Linux Basics")
+model Module {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  order       Int      // Order within the path
+  pathId      String
+  creatorId   String
+  duration    Int?     // Duration in minutes
+
+  // Relations
+  path    LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+  creator User         @relation("CreatedBy", fields: [creatorId], references: [id])
+  lessons Lesson[]
+  quizzes Quiz[]       // Module-level quizzes
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Lesson - individual content unit within a module
+model Lesson {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   // HTML content of the lesson
+  order       Int      // Order within module
+  moduleId    String
+  creatorId   String
+  duration    Int?     // Duration in minutes
+  difficulty  DifficultyLevel?
+
+  // Relations
+  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  creator     User     @relation("CreatedBy", fields: [creatorId], references: [id])
+  progress    Progress[] // Track who completed this lesson
+  quiz        Quiz?    // Optional quiz after lesson
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============= QUIZZES & QUESTIONS =============
+// Quiz - assessment associated with a lesson, module, or path
+model Quiz {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  pathId      String?  // Can be at path level
+  moduleId    String?  // Or module level
+  lessonId    String?  @unique // One quiz per lesson
+  
+  passingScore Int    @default(70) // Percentage needed to pass
+  timeLimit   Int?    // Time limit in seconds
+  retakeable  Boolean @default(true)
+
+  // Relations
+  path        LearningPath?    @relation(fields: [pathId], references: [id], onDelete: Cascade)
+  module      Module?          @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  lesson      Lesson?          @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  questions   Question[]
+  submissions QuizSubmission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Question - individual quiz question
+model Question {
+  id         String       @id @default(cuid())
+  quizId     String
+  type       QuestionType
+  text       String       // Question text
+  order      Int          // Order within quiz
+  points     Int          @default(1)
+
+  // Relations
+  quiz    Quiz            @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  options QuestionOption[]
+  answers QuestionAnswer[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Question option - answer choices for questions
+model QuestionOption {
+  id         String  @id @default(cuid())
+  questionId String
+  text       String  // Option text
+  isCorrect  Boolean // Mark correct answers
+  order      Int
+
+  // Relations
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([questionId, order])
+}
+
+// User's answer to a question
+model QuestionAnswer {
+  id         String  @id @default(cuid())
+  questionId String
+  submissionId String
+  selectedOptionId String?
+  isCorrect  Boolean @default(false)
+
+  // Relations
+  question   Question         @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  submission QuizSubmission   @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+}
+
+// Quiz submission - tracks each time a user takes a quiz
+model QuizSubmission {
+  id           String  @id @default(cuid())
+  userId       String
+  quizId       String
+  score        Int?    // Total score
+  maxScore     Int?    // Total possible points
+  percentage   Float?  // Percentage score
+  passed       Boolean @default(false)
+  timeSpent    Int?    // Time spent in seconds
+
+  // Relations
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz     Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers  QuestionAnswer[]
+
+  submittedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============= PROGRESS TRACKING =============
+// Enrollment - tracks user enrollment in a learning path
+model Enrollment {
+  id        String  @id @default(cuid())
+  userId    String
+  pathId    String
+  completed Boolean @default(false)
+  percentage Float  @default(0) // Overall completion percentage
+
+  // Relations
+  user User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  path LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+
+  enrolledAt DateTime @default(now())
+  completedAt DateTime?
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, pathId])
+}
+
+// Progress - tracks individual lesson completion
+model Progress {
+  id       String  @id @default(cuid())
+  userId   String
+  lessonId String
+  completed Boolean @default(false)
+  views    Int     @default(0) // How many times viewed
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  firstViewedAt DateTime @default(now())
+  completedAt   DateTime?
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+}
