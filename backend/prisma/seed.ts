@@ -1,300 +1,307 @@
-import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcryptjs';
+// prisma/seed.ts
+/**
+ * Database Seed Script
+ *
+ * Creates:
+ * 1. Admin user account
+ * 2. Regular user account (for testing)
+ * 3. Demo learning paths
+ * 4. Demo lessons (without actual files)
+ *
+ * Run with: npx prisma db seed
+ */
+
+import { PrismaClient, Role, FileType } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
+//import { createHash } from 'crypto';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Clean database
-  await prisma.enrollmentToken.deleteMany();
-  await prisma.quizSubmission.deleteMany();
-  await prisma.questionAnswer.deleteMany();
-  await prisma.question.deleteMany();
-  await prisma.quiz.deleteMany();
-  await prisma.progress.deleteMany();
-  await prisma.enrollment.deleteMany();
-  await prisma.lesson.deleteMany();
-  await prisma.module.deleteMany();
-  await prisma.learningPath.deleteMany();
-  await prisma.userProfile.deleteMany();
-  await prisma.user.deleteMany();
+  console.log('🌱 Starting database seed...\n');
 
-  // Create users
+  // ==================== USERS ====================
+  console.log('👥 Creating users...');
+
+  // Hash passwords
   const adminPassword = await bcrypt.hash('admin123', 10);
-  const instructorPassword = await bcrypt.hash('instructor123', 10);
-  const studentPassword = await bcrypt.hash('student123', 10);
+  const userPassword = await bcrypt.hash('user123', 10);
+  // const adminPassword = createHash('sha256').update('admin123').digest('hex');
+  //const userPassword = createHash('sha256').update('user123').digest('hex');
 
-  const admin = await prisma.user.create({
-    data: {
-      email: 'admin@learning.com',
-      username: 'admin',
+  // Create Admin User
+  const admin = await prisma.user.upsert({
+    where: { email: 'admin@cyberlearn.com' },
+    update: {},
+    create: {
+      email: 'admin@cyberlearn.com',
       password: adminPassword,
-      firstName: 'Admin',
-      lastName: 'User',
-      role: 'ADMIN',
-      profile: {
-        create: { bio: 'Platform administrator' },
-      },
+      role: Role.ADMIN,
     },
   });
+  console.log('✅ Admin created:', admin.email);
 
-  const instructor = await prisma.user.create({
-    data: {
-      email: 'instructor@learning.com',
-      username: 'instructor',
-      password: instructorPassword,
-      firstName: 'John',
-      lastName: 'Doe',
-      role: 'INSTRUCTOR',
-      profile: {
-        create: { bio: 'Cybersecurity expert with 10+ years experience' },
-      },
+  // Create Regular User
+  const user = await prisma.user.upsert({
+    where: { email: 'student@cyberlearn.com' },
+    update: {},
+    create: {
+      email: 'student@cyberlearn.com',
+      password: userPassword,
+      role: Role.USER,
     },
   });
+  console.log('✅ User created:', user.email);
 
-  const student1 = await prisma.user.create({
-    data: {
-      email: 'student1@learning.com',
-      username: 'student1',
-      password: studentPassword,
-      firstName: 'Alice',
-      lastName: 'Smith',
-      role: 'STUDENT',
-      profile: {
-        create: { bio: 'Beginner in cybersecurity' },
-      },
+  // ==================== LEARNING PATHS ====================
+  console.log('\n📚 Creating learning paths...');
+
+  const webSecurityPath = await prisma.learningPath.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      title: 'Web Application Security',
+      description:
+        'Master the fundamentals of web application security. Learn about common vulnerabilities like SQL injection, XSS, CSRF, and how to prevent them. This comprehensive path covers OWASP Top 10 and real-world attack scenarios.',
+      published: true,
     },
   });
+  console.log('✅ Created:', webSecurityPath.title);
 
-  const student2 = await prisma.user.create({
-    data: {
-      email: 'student2@learning.com',
-      username: 'student2',
-      password: studentPassword,
-      firstName: 'Bob',
-      lastName: 'Johnson',
-      role: 'STUDENT',
-      profile: {
-        create: { bio: 'Intermediate learner' },
-      },
+  const networkSecurityPath = await prisma.learningPath.upsert({
+    where: { id: 2 },
+    update: {},
+    create: {
+      title: 'Network Security Fundamentals',
+      description:
+        'Dive deep into network security concepts. Understand TCP/IP, network protocols, firewalls, IDS/IPS systems, and network attack patterns. Learn to secure networks against modern threats.',
+      published: true,
     },
   });
+  console.log('✅ Created:', networkSecurityPath.title);
 
-  // Create learning paths
-  const path1 = await prisma.learningPath.create({
-    data: {
-      title: 'Web Application Security Fundamentals',
-      description: 'Learn the basics of securing web applications against common attacks',
-      difficulty: 'BEGINNER',
-      creatorId: instructor.id,
+  const cryptographyPath = await prisma.learningPath.upsert({
+    where: { id: 3 },
+    update: {},
+    create: {
+      title: 'Applied Cryptography',
+      description:
+        'Explore the world of cryptography. Learn symmetric and asymmetric encryption, hashing algorithms, digital signatures, SSL/TLS, and practical implementations in modern applications.',
+      published: false, // Draft
     },
   });
+  console.log('✅ Created:', cryptographyPath.title);
 
-  const path2 = await prisma.learningPath.create({
-    data: {
-      title: 'Network Security Essentials',
-      description: 'Master network protocols, firewalls, and intrusion detection',
-      difficulty: 'INTERMEDIATE',
-      creatorId: instructor.id,
+  const pentestingPath = await prisma.learningPath.upsert({
+    where: { id: 4 },
+    update: {},
+    create: {
+      title: 'Ethical Hacking & Penetration Testing',
+      description:
+        'Learn ethical hacking from scratch. Master reconnaissance, vulnerability scanning, exploitation techniques, and post-exploitation. Become a certified penetration tester with hands-on labs.',
+      published: true,
     },
   });
+  console.log('✅ Created:', pentestingPath.title);
 
-  const path3 = await prisma.learningPath.create({
-    data: {
-      title: 'Penetration Testing Masterclass',
-      description: 'Advanced penetration testing techniques and methodologies',
-      difficulty: 'ADVANCED',
-      creatorId: instructor.id,
-    },
-  });
+  // ==================== LESSONS ====================
+  console.log('\n📄 Creating lessons...');
 
-  // Create modules for path1
-  const module1_1 = await prisma.module.create({
-    data: {
-      title: 'Introduction to OWASP Top 10',
-      description: 'Understanding the most critical security risks',
-      learningPathId: path1.id,
+  // Web Security Path Lessons
+  const webLessons = [
+    {
+      title: 'Introduction to Web Security',
+      description:
+        'Overview of web application security landscape, common threats, and the importance of secure coding practices.',
       order: 1,
+      fileType: FileType.PDF,
+      fileUrl: '/uploads/pdfs/demo-web-intro.pdf',
     },
-  });
-
-  const module1_2 = await prisma.module.create({
-    data: {
-      title: 'SQL Injection Prevention',
-      description: 'Protecting applications from SQL injection attacks',
-      learningPathId: path1.id,
+    {
+      title: 'SQL Injection: From Basics to Advanced',
+      description:
+        'Deep dive into SQL injection attacks. Learn how attackers exploit vulnerable queries and how to implement proper parameterized queries and input validation.',
       order: 2,
+      fileType: FileType.VIDEO,
+      fileUrl: '/uploads/videos/demo-sql-injection.mp4',
     },
+    {
+      title: 'Cross-Site Scripting (XSS) Explained',
+      description:
+        'Understanding reflected, stored, and DOM-based XSS attacks. Learn proper output encoding and Content Security Policy implementation.',
+      order: 3,
+      fileType: FileType.PDF,
+      fileUrl: '/uploads/pdfs/demo-xss.pdf',
+    },
+    {
+      title: 'CSRF Protection Techniques',
+      description:
+        'Learn about Cross-Site Request Forgery attacks and implement anti-CSRF tokens, SameSite cookies, and double-submit patterns.',
+      order: 4,
+      fileType: FileType.VIDEO,
+      fileUrl: '/uploads/videos/demo-csrf.mp4',
+    },
+    {
+      title: 'Authentication & Session Management',
+      description:
+        'Best practices for implementing secure authentication, password hashing with bcrypt, JWT tokens, and session security.',
+      order: 5,
+      fileType: FileType.PDF,
+      fileUrl: '/uploads/pdfs/demo-auth.pdf',
+    },
+  ];
+
+  for (const lesson of webLessons) {
+    const created = await prisma.lesson.create({
+      data: {
+        ...lesson,
+        published: true,
+        learningPathId: webSecurityPath.id,
+      },
+    });
+    console.log(`  ✅ Lesson ${lesson.order}: ${lesson.title}`);
+  }
+
+  // Network Security Path Lessons
+  const networkLessons = [
+    {
+      title: 'TCP/IP Protocol Suite Overview',
+      description:
+        'Understanding the foundation of network communication. Deep dive into TCP/IP layers, packet structure, and protocol analysis.',
+      order: 6,
+      fileType: FileType.VIDEO,
+      fileUrl: '/uploads/videos/demo-tcpip.mp4',
+    },
+    {
+      title: 'Network Scanning & Reconnaissance',
+      description:
+        'Learn to use tools like Nmap, Wireshark for network discovery and vulnerability assessment.',
+      order: 7,
+      fileType: FileType.PDF,
+      fileUrl: '/uploads/pdfs/demo-nmap.pdf',
+    },
+    {
+      title: 'Firewall Configuration & Rules',
+      description:
+        'Hands-on guide to configuring firewalls, creating effective rule sets, and understanding stateful vs stateless filtering.',
+      order: 8,
+      fileType: FileType.VIDEO,
+      fileUrl: '/uploads/videos/demo-firewall.mp4',
+    },
+  ];
+
+  for (const lesson of networkLessons) {
+    const created = await prisma.lesson.create({
+      data: {
+        ...lesson,
+        published: true,
+        learningPathId: networkSecurityPath.id,
+      },
+    });
+    console.log(`  ✅ Lesson ${lesson.order}: ${lesson.title}`);
+  }
+
+  // Cryptography Path Lessons (Draft)
+  const cryptoLessons = [
+    {
+      title: 'Introduction to Cryptography',
+      description:
+        'History of cryptography, basic concepts, and modern applications in cybersecurity.',
+      order: 9,
+      fileType: FileType.PDF,
+      fileUrl: '/uploads/pdfs/demo-crypto-intro.pdf',
+    },
+    {
+      title: 'Symmetric Encryption: AES & DES',
+      description:
+        'Understanding block ciphers, encryption modes, and practical implementation of AES.',
+      order: 10,
+      fileType: FileType.VIDEO,
+      fileUrl: '/uploads/videos/demo-symmetric.mp4',
+    },
+  ];
+
+  for (const lesson of cryptoLessons) {
+    const created = await prisma.lesson.create({
+      data: {
+        ...lesson,
+        published: false, // Draft lessons
+        learningPathId: cryptographyPath.id,
+      },
+    });
+    console.log(`  ✅ Lesson ${lesson.order}: ${lesson.title} (Draft)`);
+  }
+
+  // Pentesting Path Lessons
+  const pentestLessons = [
+    {
+      title: 'Information Gathering & OSINT',
+      description:
+        'Master open-source intelligence techniques. Learn to gather information about targets using public sources.',
+      order: 11,
+      fileType: FileType.VIDEO,
+      fileUrl: '/uploads/videos/demo-osint.mp4',
+    },
+    {
+      title: 'Vulnerability Scanning with Nessus',
+      description:
+        'Complete guide to using Nessus for automated vulnerability discovery and risk assessment.',
+      order: 12,
+      fileType: FileType.PDF,
+      fileUrl: '/uploads/pdfs/demo-nessus.pdf',
+    },
+    {
+      title: 'Exploitation with Metasploit Framework',
+      description:
+        'Hands-on exploitation using Metasploit. Learn to identify, exploit, and demonstrate vulnerabilities.',
+      order: 13,
+      fileType: FileType.VIDEO,
+      fileUrl: '/uploads/videos/demo-metasploit.mp4',
+    },
+  ];
+
+  for (const lesson of pentestLessons) {
+    const created = await prisma.lesson.create({
+      data: {
+        ...lesson,
+        published: true,
+        learningPathId: pentestingPath.id,
+      },
+    });
+    console.log(`  ✅ Lesson ${lesson.order}: ${lesson.title}`);
+  }
+
+  // ==================== SUMMARY ====================
+  console.log('\n📊 Seed Summary:');
+  console.log('=====================================');
+
+  const totalUsers = await prisma.user.count();
+  const totalPaths = await prisma.learningPath.count();
+  const totalLessons = await prisma.lesson.count();
+  const publishedPaths = await prisma.learningPath.count({
+    where: { published: true },
+  });
+  const publishedLessons = await prisma.lesson.count({
+    where: { published: true },
   });
 
-  // Create modules for path2
-  const module2_1 = await prisma.module.create({
-    data: {
-      title: 'Network Protocols and Security',
-      description: 'Deep dive into TCP/IP, DNS, and secure protocols',
-      learningPathId: path2.id,
-      order: 1,
-    },
-  });
-
-  const module2_2 = await prisma.module.create({
-    data: {
-      title: 'Firewall Configuration',
-      description: 'Implementing and managing firewalls',
-      learningPathId: path2.id,
-      order: 2,
-    },
-  });
-
-  // Create lessons for module1_1
-  const lesson1_1_1 = await prisma.lesson.create({
-    data: {
-      title: 'What is OWASP?',
-      content: 'OWASP (Open Web Application Security Project) is a nonprofit organization focused on improving software security...',
-      moduleId: module1_1.id,
-      order: 1,
-      videoUrl: 'https://youtube.com/watch?v=example1',
-    },
-  });
-
-  const lesson1_1_2 = await prisma.lesson.create({
-    data: {
-      title: 'The OWASP Top 10 List',
-      content: 'The OWASP Top 10 includes: 1. Broken Access Control, 2. Cryptographic Failures, 3. Injection...',
-      moduleId: module1_1.id,
-      order: 2,
-      videoUrl: 'https://youtube.com/watch?v=example2',
-    },
-  });
-
-  // Create lessons for module1_2
-  const lesson1_2_1 = await prisma.lesson.create({
-    data: {
-      title: 'Understanding SQL Injection',
-      content: 'SQL Injection is an attack technique where an attacker inserts SQL statements into input fields...',
-      moduleId: module1_2.id,
-      order: 1,
-      videoUrl: 'https://youtube.com/watch?v=example3',
-    },
-  });
-
-  // Create quiz for module1_1
-  const quiz1 = await prisma.quiz.create({
-    data: {
-      title: 'OWASP Top 10 Quiz',
-      description: 'Test your knowledge of the OWASP Top 10',
-      moduleId: module1_1.id,
-      passingScore: 70,
-    },
-  });
-
-  // Create questions for quiz1
-  const question1 = await prisma.question.create({
-    data: {
-      quizId: quiz1.id,
-      text: 'What does OWASP stand for?',
-      type: 'MULTIPLE_CHOICE',
-      points: 10,
-    },
-  });
-
-  await prisma.questionOption.create({
-    data: {
-      questionId: question1.id,
-      text: 'Open Web Application Security Project',
-      isCorrect: true,
-    },
-  });
-
-  await prisma.questionOption.create({
-    data: {
-      questionId: question1.id,
-      text: 'Online Web Application Software Platform',
-      isCorrect: false,
-    },
-  });
-
-  await prisma.questionOption.create({
-    data: {
-      questionId: question1.id,
-      text: 'Open Worldwide Application Security Protocol',
-      isCorrect: false,
-    },
-  });
-
-  const question2 = await prisma.question.create({
-    data: {
-      quizId: quiz1.id,
-      text: 'SQL Injection is ranked in the OWASP Top 10?',
-      type: 'TRUE_FALSE',
-      points: 10,
-    },
-  });
-
-  await prisma.questionOption.create({
-    data: {
-      questionId: question2.id,
-      text: 'True',
-      isCorrect: true,
-    },
-  });
-
-  await prisma.questionOption.create({
-    data: {
-      questionId: question2.id,
-      text: 'False',
-      isCorrect: false,
-    },
-  });
-
-  // Enroll students
-  await prisma.enrollment.create({
-    data: {
-      userId: student1.id,
-      learningPathId: path1.id,
-    },
-  });
-
-  await prisma.enrollment.create({
-    data: {
-      userId: student2.id,
-      learningPathId: path1.id,
-    },
-  });
-
-  await prisma.enrollment.create({
-    data: {
-      userId: student1.id,
-      learningPathId: path2.id,
-    },
-  });
-
-  // Create progress records
-  await prisma.progress.create({
-    data: {
-      userId: student1.id,
-      lessonId: lesson1_1_1.id,
-      completed: true,
-    },
-  });
-
-  await prisma.progress.create({
-    data: {
-      userId: student1.id,
-      lessonId: lesson1_1_2.id,
-      completed: false,
-    },
-  });
-
-  console.log('✅ Database seeded successfully!');
-  console.log('\n📝 Test Credentials:');
-  console.log('Admin: admin / admin123');
-  console.log('Instructor: instructor / instructor123');
-  console.log('Student: student1 / student123');
+  console.log(`👥 Users: ${totalUsers}`);
+  console.log(`📚 Learning Paths: ${totalPaths} (${publishedPaths} published)`);
+  console.log(`📄 Lessons: ${totalLessons} (${publishedLessons} published)`);
+  console.log('\n🔐 Login Credentials:');
+  console.log('=====================================');
+  console.log('Admin Account:');
+  console.log('  Email: admin@cyberlearn.com');
+  console.log('  Password: admin123');
+  console.log('\nStudent Account:');
+  console.log('  Email: student@cyberlearn.com');
+  console.log('  Password: user123');
+  console.log('\n✨ Database seeded successfully!');
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error('❌ Error seeding database:', e);
     process.exit(1);
   })
   .finally(async () => {

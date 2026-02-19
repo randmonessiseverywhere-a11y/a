@@ -1,22 +1,33 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+// src/learning-path/learning-path.controller.ts
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
-@Controller('learning-path')
+@Controller('learning-paths')
 export class LearningPathController {
   constructor(private prisma: PrismaService) {}
 
-  @Get()
-  async findAll() {
-    return this.prisma.learningPath.findMany();
-  }
-
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  getLearningPath(@Param('id', ParseIntPipe) id: number) {
+    // Use ParseIntPipe to convert string to number
     return this.prisma.learningPath.findUnique({ where: { id } });
   }
 
   @Post()
-  async create(@Body() data: { title: string; description: string; difficulty: string; creatorId: string }) {
-    return this.prisma.learningPath.create({ data: { ...data, difficulty: data.difficulty as any } });
+  createLearningPath(@Body() data: any) {
+    // Remove 'difficulty' field if it doesn't exist in schema
+    return this.prisma.learningPath.create({
+      data: {
+        title: data.title,
+        description: data.description,
+        published: data.published ?? false,
+      },
+    });
   }
 }
