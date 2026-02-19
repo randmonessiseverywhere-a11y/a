@@ -1,0 +1,302 @@
+.admin-dashboard {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+  background: #0a0e27;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #00ff41;
+  position: relative;
+}
+
+.dashboard-header::before {
+  content: '> ADMIN CONTROL PANEL';
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(0, 255, 65, 0.5);
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  color: #00ff41;
+  font-size: 2.5rem;
+  text-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+  font-family: 'Courier New', monospace;
+}
+
+.dashboard-header p {
+  margin: 0.5rem 0 0 0;
+  color: rgba(0, 255, 65, 0.7);
+  font-size: 1.1rem;
+}
+
+.tab-navigation {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid rgba(0, 255, 65, 0.2);
+  overflow-x: auto;
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-bottom: 3px solid transparent;
+  color: rgba(0, 255, 65, 0.6);
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.tab-button:hover {
+  background: rgba(0, 255, 65, 0.05);
+  color: #00ff41;
+}
+
+.tab-button.active {
+  color: #00ff41;
+  border-bottom-color: #00ff41;
+  background: rgba(0, 255, 65, 0.1);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+}
+
+.tab-content {
+  background: rgba(10, 14, 39, 0.8);
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid #00ff41;
+  box-shadow: 
+    0 0 30px rgba(0, 255, 65, 0.2),
+    inset 0 0 60px rgba(0, 255, 65, 0.03);
+}
+
+/* Form Styles */
+.create-learning-path,
+.upload-lesson {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.create-learning-path h2,
+.upload-lesson h2 {
+  margin-top: 0;
+  color: #00ff41;
+  margin-bottom: 1.5rem;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #00ff41;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.required {
+  color: #ff0040;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="file"],
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  background: rgba(0, 255, 65, 0.05);
+  border: 1px solid #00ff41;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #00ff41;
+  font-family: 'Courier New', monospace;
+  transition: all 0.3s;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: rgba(0, 255, 65, 0.4);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #0f0;
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+  background: rgba(0, 255, 65, 0.08);
+}
+
+.form-group input:disabled,
+.form-group textarea:disabled,
+.form-group select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-group small {
+  display: block;
+  margin-top: 0.25rem;
+  color: rgba(0, 255, 65, 0.6);
+  font-size: 0.8rem;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: #00ff41;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+  accent-color: #00ff41;
+}
+
+.file-info {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(0, 255, 65, 0.1);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 4px;
+  color: #00ff41;
+  font-size: 0.9rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 30px;
+  background: rgba(0, 255, 65, 0.1);
+  border: 1px solid #00ff41;
+  border-radius: 15px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00ff41, #0f0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0a0e27;
+  font-weight: 600;
+  transition: width 0.3s;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+}
+
+.alert {
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  border: 1px solid;
+  font-family: 'Courier New', monospace;
+}
+
+.alert-success {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: #00ff41;
+  color: #00ff41;
+}
+
+.alert-error {
+  background: rgba(255, 0, 64, 0.1);
+  border-color: #ff0040;
+  color: #ff0040;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #00ff41 0%, #00cc33 100%);
+  color: #0a0e27;
+  box-shadow: 0 4px 15px rgba(0, 255, 65, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0f0 0%, #00ff41 100%);
+  box-shadow: 0 6px 25px rgba(0, 255, 65, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: rgba(0, 255, 65, 0.2);
+  color: #00ff41;
+  border: 1px solid #00ff41;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(0, 255, 65, 0.3);
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+}
+
+.btn-danger {
+  background: rgba(255, 0, 64, 0.2);
+  color: #ff0040;
+  border: 1px solid #ff0040;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: rgba(255, 0, 64, 0.3);
+  box-shadow: 0 0 15px rgba(255, 0, 64, 0.3);
+}
+
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .admin-dashboard {
+    padding: 1rem;
+  }
+
+  .tab-navigation {
+    overflow-x: scroll;
+  }
+
+  .dashboard-header h1 {
+    font-size: 2rem;
+  }
+}

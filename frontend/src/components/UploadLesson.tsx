@@ -1,7 +1,7 @@
 // src/components/UploadLesson.tsx
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
-import { api } from '../../../backend/src/services/api/api.service';
-import './UploadLesson.css';
+import { api } from '../services/api/api.service';
+//import './UploadLesson.css';
 
 // TypeScript interface for Learning Path
 interface LearningPath {

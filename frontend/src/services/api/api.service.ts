@@ -169,10 +169,17 @@ export const api = {
 /**
  * Helper function to save JWT token after login
  */
+/**
+ * Helper function to save JWT token after login
+ */
 export const saveAuthToken = (token: string) => {
+  console.log('💾 Saving token...', token.substring(0, 20) + '...');
   localStorage.setItem('jwt_token', token);
+  
+  // Verify it was saved
+  const saved = localStorage.getItem('jwt_token');
+  console.log('✅ Token saved:', saved ? 'YES' : 'NO');
 };
-
 /**
  * Helper function to remove JWT token on logout
  */

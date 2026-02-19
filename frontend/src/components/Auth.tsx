@@ -1,72 +1,115 @@
 import { useState } from 'react';
 import axios from 'axios';
+import './Auth.css';
 
-const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [form, setForm] = useState({ email: '', username: '', password: '', firstName: '', lastName: '' });
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+interface AuthProps {
+  onLoginSuccess: () => void;
+}
+
+const Auth = ({ onLoginSuccess }: AuthProps) => {
+  const [form, setForm] = useState({ username: '', password: '' });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: '' }); // Clear error on change
+    setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrors({});
+    setError('');
+    setLoading(true);
+
     try {
-      if (isLogin) {
-        const res = await axios.post('http://localhost:3000/auth/login', { username: form.username, password: form.password });
-        localStorage.setItem('token', res.data.access_token);
-        localStorage.setItem('user', JSON.stringify(res.data.user));
-        window.location.href = '/dashboard';
-      } else {
-        await axios.post('http://localhost:3000/auth/register', form);
-        setIsLogin(true);
-        setForm({ email: '', username: '', password: '', firstName: '', lastName: '' });
-      }
-    } catch (error: any) {
-      if (error.response?.data?.message) {
-        // Assuming backend returns validation errors in a specific format
-        const errMsgs = error.response.data.message;
-        if (Array.isArray(errMsgs)) {
-          const errObj: { [key: string]: string } = {};
-          errMsgs.forEach((msg: string) => {
-            const field = msg.split(' ')[0].toLowerCase();
-            errObj[field] = msg;
-          });
-          setErrors(errObj);
-        } else {
-          setErrors({ general: errMsgs });
-        }
-      } else {
-        setErrors({ general: 'An error occurred' });
-      }
+      console.log('🔐 Attempting login with:', form.username);
+      
+      const res = await axios.post('http://localhost:3000/auth/login', {
+        username: form.username,
+        password: form.password
+      });
+
+      console.log('✅ Login response:', res.data);
+
+      // Save token
+      localStorage.setItem('jwt_token', res.data.access_token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+
+      console.log('💾 Token saved');
+
+      // Trigger success callback
+      onLoginSuccess();
+      
+    } catch (err: any) {
+      console.error('❌ Login error:', err);
+      setError(err.response?.data?.message || 'Invalid credentials');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="App">
-      <h1>{isLogin ? 'Login' : 'Register'}</h1>
-      {errors.general && <p style={{ color: 'red' }}>{errors.general}</p>}
-      <form onSubmit={handleSubmit}>
-        {!isLogin && (
-          <>
-            <input name="email" placeholder="Email" value={form.email} onChange={handleChange} required />
-            {errors.email && <p style={{ color: 'red', fontSize: '0.8rem' }}>{errors.email}</p>}
-            <input name="firstName" placeholder="First Name" value={form.firstName} onChange={handleChange} />
-            <input name="lastName" placeholder="Last Name" value={form.lastName} onChange={handleChange} />
-          </>
+    <div className="auth-container">
+      <div className="auth-box">
+        <h1>🔒 CyberLearn Admin</h1>
+        <p>Sign in to manage learning content</p>
+
+        {error && (
+          <div style={{
+            padding: '1rem',
+            background: '#f8d7da',
+            color: '#721c24',
+            borderRadius: '4px',
+            marginBottom: '1rem'
+          }}>
+            ❌ {error}
+          </div>
         )}
-        <input name="username" placeholder="Username" value={form.username} onChange={handleChange} required />
-        {errors.username && <p style={{ color: 'red', fontSize: '0.8rem' }}>{errors.username}</p>}
-        <input name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} required />
-        {errors.password && <p style={{ color: 'red', fontSize: '0.8rem' }}>{errors.password}</p>}
-        <button type="submit">{isLogin ? 'Login' : 'Register'}</button>
-      </form>
-      <button onClick={() => { setIsLogin(!isLogin); setErrors({}); setForm({ email: '', username: '', password: '', firstName: '', lastName: '' }); }}>
-        {isLogin ? 'Need to register?' : 'Already have an account?'}
-      </button>
+
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>Email</label>
+            <input
+              type="text"
+              name="username"
+              placeholder="admin@cyberlearn.com"
+              value={form.username}
+              onChange={handleChange}
+              required
+              disabled={loading}
+            />
+          </div>
+
+          <div>
+            <label>Password</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter password"
+              value={form.password}
+              onChange={handleChange}
+              required
+              disabled={loading}
+            />
+          </div>
+
+          <button type="submit" disabled={loading}>
+            {loading ? '⏳ Signing in...' : '🚀 Sign In'}
+          </button>
+        </form>
+
+        <div style={{
+          marginTop: '1.5rem',
+          padding: '1rem',
+          background: '#f8f9fa',
+          borderRadius: '4px',
+          fontSize: '0.9rem'
+        }}>
+          <strong>Demo Credentials:</strong><br />
+          Email: admin@cyberlearn.com<br />
+          Password: admin123
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 // src/components/LearningPathList.tsx
 import { useState, useEffect } from 'react';
-import { api } from '../../../backend/src/services/api/api.service';
+import { api } from '../services/api/api.service';
 import './LearningPathList.css';
 
 // TypeScript interfaces

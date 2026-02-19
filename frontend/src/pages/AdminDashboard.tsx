@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import CreateLearningPath from '../components/CreateLearningPath';
 import UploadLesson from '../components/UploadLesson';
-import LearningPathList from '../components/LearningPathList';
+import LearningPathList from './LearningPathList';
 import './AdminDashboard.css';
 
 /**

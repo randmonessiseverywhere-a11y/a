@@ -1,6 +1,6 @@
 // src/components/CreateLearningPath.tsx
 import { useState, type FormEvent } from 'react';
-import { api } from '../services/api.service';
+import { api } from '../services/api/api.service';
 import './CreateLearningPath.css';
 
 /**
