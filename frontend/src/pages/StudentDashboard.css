@@ -1,0 +1,149 @@
+.student-dashboard {
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.dashboard-header h1 {
+  color: #00ff41;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-header p {
+  color: rgba(0, 255, 65, 0.8);
+  font-size: 1.1rem;
+}
+
+.paths-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.path-card {
+  background: rgba(10, 14, 39, 0.85);
+  border: 2px solid rgba(0, 255, 65, 0.3);
+  border-radius: 12px;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.path-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+  border-color: #00ff41;
+}
+
+.path-card h2 {
+  color: #00ff41;
+  font-size: 1.5rem;
+  margin: 0 0 1rem 0;
+}
+
+.path-card p {
+  color: rgba(0, 255, 65, 0.8);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+  min-height: 60px;
+}
+
+.path-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #00ff41;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.arrow {
+  font-size: 1.5rem;
+}
+
+.path-detail h1 {
+  color: #00ff41;
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.path-detail .path-description {
+  color: rgba(0, 255, 65, 0.85);
+  font-size: 1rem;
+  line-height: 1.8;
+  margin-bottom: 3rem;
+  padding: 1.5rem;
+  background: rgba(0, 255, 65, 0.05);
+  border-left: 3px solid #00ff41;
+  border-radius: 6px;
+}
+
+.lessons-grid h2 {
+  color: #00ff41;
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.lessons-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.lesson-card {
+  background: rgba(10, 14, 39, 0.85);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 10px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.lesson-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.lesson-number {
+  color: #00ff41;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.lesson-card h3 {
+  color: #00ff41;
+  font-size: 1.2rem;
+  margin: 0 0 0.8rem 0;
+}
+
+.lesson-card .lesson-description {
+  color: rgba(0, 255, 65, 0.75);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  min-height: 50px;
+}
+
+.lesson-card .btn {
+  width: 100%;
+  margin-top: auto;
+}
+
+.back-btn {
+  margin-bottom: 2rem;
+}

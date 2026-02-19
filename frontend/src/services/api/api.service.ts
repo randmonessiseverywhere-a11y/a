@@ -164,8 +164,18 @@ export const api = {
       method: 'DELETE',
     });
   },
-};
 
+  getPublishedLearningPaths: async () => {
+    return fetch('http://localhost:3000/learning-paths')
+    .then(res => res.json());
+  },
+  
+  getPublishedLearningPathById: async (id: number) => {
+    return fetch(`http://localhost:3000/learning-paths/${id}`)
+    .then(res => res.json());
+  },
+};
+  
 /**
  * Helper function to save JWT token after login
  */

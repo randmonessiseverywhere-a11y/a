@@ -1,150 +1,100 @@
 .auth-container {
   min-height: 100vh;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
   padding: 2rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.auth-container::before {
-  content: '';
-  position: absolute;
-  width: 200%;
-  height: 200%;
-  background: 
-    repeating-linear-gradient(0deg, transparent, transparent 2px, #00ff41 2px, #00ff41 4px),
-    repeating-linear-gradient(90deg, transparent, transparent 2px, #00ff41 2px, #00ff41 4px);
-  opacity: 0.03;
-  animation: matrix 20s linear infinite;
-}
-
-@keyframes matrix {
-  0% { transform: translate(0, 0); }
-  100% { transform: translate(50px, 50px); }
 }
 
 .auth-box {
-  background: rgba(10, 14, 39, 0.95);
-  padding: 3rem;
+  background: rgba(10, 14, 39, 0.98);
+  padding: 2rem;
   border-radius: 12px;
   border: 2px solid #00ff41;
-  box-shadow: 
-    0 0 20px rgba(0, 255, 65, 0.3),
-    inset 0 0 60px rgba(0, 255, 65, 0.05);
-  max-width: 450px;
+  box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+  max-width: 420px;
   width: 100%;
-  position: relative;
-  z-index: 1;
-}
-
-.auth-box::before {
-  content: '> AUTHENTICATION REQUIRED';
-  position: absolute;
-  top: -30px;
-  left: 20px;
-  color: #00ff41;
-  font-size: 0.8rem;
-  font-weight: bold;
-  letter-spacing: 2px;
+  margin: 0 auto;
 }
 
 .auth-box h1 {
   margin: 0 0 0.5rem 0;
   color: #00ff41;
   text-align: center;
-  font-size: 2.5rem;
-  text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+  font-size: 1.8rem;
+  text-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
   font-family: 'Courier New', monospace;
 }
 
-.auth-box p {
+.auth-box > p {
   text-align: center;
-  color: #0f0;
-  margin: 0 0 2rem 0;
-  opacity: 0.8;
+  color: rgba(0, 255, 65, 0.8);
+  margin: 0 0 1.5rem 0;
+  font-size: 0.9rem;
 }
 
 .auth-box form div {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;
 }
 
 .auth-box label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   font-weight: 600;
   color: #00ff41;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
 .auth-box input {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.8rem;
   background: rgba(0, 255, 65, 0.05);
-  border: 1px solid #00ff41;
-  border-radius: 4px;
-  font-size: 1rem;
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 6px;
+  font-size: 0.95rem;
   color: #00ff41;
   font-family: 'Courier New', monospace;
-  transition: all 0.3s;
 }
 
 .auth-box input::placeholder {
-  color: rgba(0, 255, 65, 0.4);
+  color: rgba(0, 255, 65, 0.3);
 }
 
 .auth-box input:focus {
   outline: none;
-  border-color: #0f0;
+  border-color: #00ff41;
   box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
-  background: rgba(0, 255, 65, 0.1);
 }
 
 .auth-box button {
   width: 100%;
-  padding: 1rem;
+  padding: 0.9rem;
   background: linear-gradient(135deg, #00ff41 0%, #00cc33 100%);
   color: #0a0e27;
   border: none;
-  border-radius: 4px;
-  font-size: 1.1rem;
+  border-radius: 6px;
+  font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s;
-  text-transform: uppercase;
-  letter-spacing: 2px;
   font-family: 'Courier New', monospace;
   box-shadow: 0 4px 15px rgba(0, 255, 65, 0.3);
+  margin-top: 0.5rem;
 }
 
 .auth-box button:hover:not(:disabled) {
-  background: linear-gradient(135deg, #0f0 0%, #00ff41 100%);
-  box-shadow: 0 6px 25px rgba(0, 255, 65, 0.5);
+  box-shadow: 0 6px 20px rgba(0, 255, 65, 0.5);
   transform: translateY(-2px);
-}
-
-.auth-box button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
 }
 
 .auth-box > div:last-child {
   margin-top: 1.5rem;
   padding: 1rem;
-  background: rgba(0, 255, 65, 0.05);
-  border: 1px solid rgba(0, 255, 65, 0.2);
-  border-radius: 4px;
+  background: rgba(0, 255, 65, 0.08);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 6px;
   font-size: 0.85rem;
-  color: #00ff41;
-}
-
-.auth-box > div:last-child strong {
-  color: #0f0;
-  display: block;
-  margin-bottom: 0.5rem;
+  text-align: center;
 }
